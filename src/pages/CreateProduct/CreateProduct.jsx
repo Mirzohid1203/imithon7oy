@@ -1,37 +1,52 @@
-// Har bir productning id, title, description, price hossalari bo'lishi kerak.
+import { Form, ButtonToolbar, Button, Input, Textarea } from 'rsuite';
+import { useState } from 'react';
+
+const FormField = ({ name, label, accepter, ...props }) => (
+  <Form.Group controlId={name}>
+    <Form.Label>{label}</Form.Label>
+    <Form.Control name={name} accepter={accepter} {...props} />
+  </Form.Group>
+);
 
 function CreateProduct() {
+  const [formValue, setFormValue] = useState({
+    title: '',
+    description: '',
+    price: ''
+  });
 
+  const submitHandler = () => {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
 
-  const FormField = ({ name, label, text, ...props }) => (
-    <Form.Group controlId={name}>
-      <Form.Label>{label}</Form.Label>
-      <Form.Control name={name} {...props} />
-      {text && <Form.Text>{text}</Form.Text>}
-    </Form.Group>
-  );
+    products.push({
+      id: Date.now(),
+      title: formValue.title,
+      description: formValue.description,
+      price: formValue.price
+    });
 
-  const App = () => {
-    return (
-      <Form>
-        {/* Default vertical layout */}
-        <Form.Stack>
-          <FormField name="name" label="Username" text="Username is required" />
-          <FormField name="email" label="Email" text="Email is required" type="email" />
-          <FormField name="password" label="Password" accepter={PasswordInput} />
-          <FormField name="textarea" label="Textarea" accepter={Textarea} rows={5} />
-          <Form.Group>
-            <ButtonToolbar>
-              <Button appearance="primary">Submit</Button>
-              <Button appearance="default">Cancel</Button>
-            </ButtonToolbar>
-          </Form.Group>
-        </Form.Stack>
-      </Form>
-    );
+    localStorage.setItem('products', JSON.stringify(products));
+
+    setFormValue({
+      title: '',
+      description: '',
+      price: ''
+    });
   };
 
-  ReactDOM.render(<App />, document.getElementById('root'));
+  return (
+    <Form className='w-full p-5' fluid formValue={formValue} onChange={setFormValue}>
+      <FormField name="title" label="Title" accepter={Input} />
+      <FormField className='w-full' name="description" label="Description" accepter={Textarea} />
+      <FormField name="price" label="Price" accepter={Input} />
+
+      <ButtonToolbar>
+        <Button color="green" appearance="primary" onClick={submitHandler}>
+          PRODUCT QO'SHISH
+        </Button>
+      </ButtonToolbar>
+    </Form>
+  );
 }
 
 export default CreateProduct;
