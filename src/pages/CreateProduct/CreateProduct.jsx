@@ -1,5 +1,9 @@
+
+
+
 import { Form, ButtonToolbar, Button, Input, Textarea } from 'rsuite';
 import { useState } from 'react';
+import useProduct from '../../store/useProduct';
 
 const FormField = ({ name, label, accepter, ...props }) => (
   <Form.Group controlId={name}>
@@ -9,6 +13,7 @@ const FormField = ({ name, label, accepter, ...props }) => (
 );
 
 function CreateProduct() {
+  const addProduct = useProduct((s) => s.addProduct);
   const [formValue, setFormValue] = useState({
     title: '',
     description: '',
@@ -16,16 +21,11 @@ function CreateProduct() {
   });
 
   const submitHandler = () => {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-
-    products.push({
-      id: Date.now(),
+    addProduct({
       title: formValue.title,
       description: formValue.description,
       price: formValue.price
     });
-
-    localStorage.setItem('products', JSON.stringify(products));
 
     setFormValue({
       title: '',
